@@ -1,8 +1,8 @@
 {
   "name": "avro-viewer",
   "displayName": "avro-viewer",
-  "description": "",
-  "version": "0.0.1",
+  "description": "This is a vscode extension that allows you to preview .avro files.",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.78.0"
   },
@@ -46,5 +46,13 @@
   },
   "dependencies": {
     "avsc": "^5.7.7"
+  },
+  "repository": {
+    "url": "https://github.com/yasunari89/avro-viewer/"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "author": {
+    "name": "Yasunari Ota",
+    "url": "https://github.com/yasunari89/"
   }
 }
