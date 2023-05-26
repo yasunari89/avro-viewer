@@ -1,5 +1,6 @@
 {
   "name": "avro-viewer",
+  "publisher": "yasunari89",
   "displayName": "avro-viewer",
   "description": "This is a vscode extension that allows you to preview .avro files.",
   "version": "0.1.0",
