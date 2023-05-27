@@ -51,11 +51,11 @@ function activate(context) {
 					console.log(record);
 					let tmp = [];
 					for (let field of header) {
-						let item = record[field]
-						if (item !== undefined) {
+						let item = record[field];
+						if (item !== undefined && item !== null) {
 							tmp.push(item);
 						} else {
-							tmp.push(null);
+							tmp.push('');
 						}
 					}
 					matrix.push(tmp);
