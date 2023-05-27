@@ -37,7 +37,7 @@ function activate(context) {
 		let records = [];
 		decoder.on('data', (data) => {
 			console.log(data);
-			records.push(JSON.parse(data));
+			records.push(data);
 		})
 			.on('end', () => {
 				let header = [];
@@ -48,10 +48,12 @@ function activate(context) {
 				let matrix = [header];
 				for (let i = 0; i < records.length; i++) {
 					let record = records[i];
+					console.log(record);
 					let tmp = [];
 					for (let field of header) {
-						if (record[field] !== undefined) {
-							tmp.push(record[field]);
+						let item = record[field]
+						if (item !== undefined) {
+							tmp.push(item);
 						} else {
 							tmp.push(null);
 						}
