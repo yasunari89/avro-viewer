@@ -51,22 +51,26 @@ function activate(context) {
 		const decoder = avro.createFileDecoder(avro_path);
 
 		let schema = {};
+		// get schema
 		decoder.on('metadata', (metadata) => {
 			schema = metadata;
 		}).on('end', () => {
+			// display schema after getting schema
 			let panel = vscode.window.createWebviewPanel('Schema', 'Avro Schema', vscode.ViewColumn.One, {});
 			panel.webview.html = getHtmlSchema(schema);
 		});
 
 		let records = [];
+		// get records
 		decoder.on('data', (data) => {
 			records.push(data);
 		}).on('end', () => {
+			// get header from schema
 			let header = [];
 			for (let i = 0; i < schema['fields'].length; i++) {
 				header.push(schema['fields'][i]['name']);
 			}
-			// create data matrix
+			// create records matrix
 			let matrix = [header];
 			for (let i = 0; i < records.length; i++) {
 				let record = records[i];
@@ -77,6 +81,7 @@ function activate(context) {
 				}
 				matrix.push(recordValues);
 			}
+			// display records with header
 			let panel = vscode.window.createWebviewPanel('Records', 'Avro Records', vscode.ViewColumn.One, {});
 			panel.webview.html = getHtmlRecords(matrix);
 		});
