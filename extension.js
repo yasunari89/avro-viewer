@@ -10,6 +10,7 @@ function activate(context) {
 	// generate HTML for displaying schema
 	function getHtmlSchema(schema) {
 		let formattedSchema = JSON.stringify(schema, null, 4)
+			// convert newline to <br/>, space to &nbsp; for HTML
 			.replace(/\r|\n/g, '<br/>').replace(/ /g, '&nbsp;');
 		return `
 			<!DOCTYPE html>
