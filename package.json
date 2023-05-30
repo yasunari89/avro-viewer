@@ -11,6 +11,9 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "avro"
+  ],
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
