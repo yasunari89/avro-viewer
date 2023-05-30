@@ -57,7 +57,7 @@ function activate(context) {
 			schema = metadata;
 		}).on('end', () => {
 			// display schema after getting schema
-			let panel = vscode.window.createWebviewPanel('Schema', 'Avro Schema', vscode.ViewColumn.One, {});
+			let panel = vscode.window.createWebviewPanel('Schema', `Schema: ${avro_path}`, vscode.ViewColumn.One, {});
 			panel.webview.html = getHtmlSchema(schema);
 		});
 
@@ -83,7 +83,7 @@ function activate(context) {
 				matrix.push(recordValues);
 			}
 			// display records with header
-			let panel = vscode.window.createWebviewPanel('Records', 'Avro Records', vscode.ViewColumn.One, {});
+			let panel = vscode.window.createWebviewPanel('Records', `Records: ${avro_path}`, vscode.ViewColumn.One, {});
 			panel.webview.html = getHtmlRecords(matrix);
 		});
 
