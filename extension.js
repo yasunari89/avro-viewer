@@ -7,80 +7,79 @@ const avro = require('avsc');
  */
 function activate(context) {
 
-	let disposable = vscode.commands.registerCommand('avro-viewer.open', function () {
-		console.log("Start to open avro file...");
+	// generate HTML for displaying schema
+	function getHtmlSchema(schema) {
+		let formattedSchema = JSON.stringify(schema, null, 4)
+			.replace(/\r|\n/g, '<br/>').replace(/ /g, '&nbsp;');
+		return `
+			<!DOCTYPE html>
+			<html lang=en>
+				<body>
+					<p>${formattedSchema}</p>
+				</body>
+			</html>
+		`
+	}
 
+	// generate HTML for displaying records
+	function getHtmlRecords(matrix) {
+		let formattedRows = [];
+		for (let i = 0; i < matrix.length; i++) {
+			let row = matrix[i];
+			let formattedCells = [];
+			for (let j = 0; j < row.length; j++) {
+				let formattedCell = `<td style="padding: 10px;border-bottom: solid 1px;">${row[j]}</td>`
+				formattedCells.push(formattedCell);
+			}
+			let formattedRow = `<tr>${formattedCells.join('')}</tr>`;
+			formattedRows.push(formattedRow);
+		}
+		return `
+			<!DOCTYPE html>
+			<html lang=en>
+				<body>
+					<table style="border-top: solid 1px;border-spacing: 0;">
+						${formattedRows.join('')}
+					</table>
+				</body>
+			</html>
+		`
+	}
+
+	let disposable = vscode.commands.registerCommand('avro-viewer.open', function () {
 		const avro_path = vscode.window.activeTextEditor.document.fileName;
 		const decoder = avro.createFileDecoder(avro_path);
-		console.log(decoder);
 
 		let schema = {};
 		decoder.on('metadata', (metadata) => {
 			schema = metadata;
-			console.log(schema);
-		})
-			.on('end', () => {
-				// convert spaces and newlines into html special characters
-				let htmlSchema = JSON.stringify(schema, null, 4)
-					.replace(/\r|\n/g, '<br/>')
-					.replace(/ /g, '&nbsp;');
-
-				let panel = vscode.window.createWebviewPanel(
-					'Schema', 'Avro Schema', vscode.ViewColumn.One, {}
-				);
-				panel.webview.html = `<!DOCTYPE html>
-			<html lang="en">
-			<body><p>${htmlSchema}</p></body>
-			</html>`;
-			});
+		}).on('end', () => {
+			let panel = vscode.window.createWebviewPanel('Schema', 'Avro Schema', vscode.ViewColumn.One, {});
+			panel.webview.html = getHtmlSchema(schema);
+		});
 
 		let records = [];
 		decoder.on('data', (data) => {
-			console.log(data);
 			records.push(data);
-		})
-			.on('end', () => {
-				let header = [];
-				for (let i = 0; i < schema['fields'].length; i++) {
-					header.push(schema['fields'][i]['name']);
+		}).on('end', () => {
+			let header = [];
+			for (let i = 0; i < schema['fields'].length; i++) {
+				header.push(schema['fields'][i]['name']);
+			}
+			// create data matrix
+			let matrix = [header];
+			for (let i = 0; i < records.length; i++) {
+				let record = records[i];
+				let recordValues = [];
+				for (let field of header) {
+					let recordValue = (record[field] !== undefined && record[field] !== null) ? record[field] : '';
+					recordValues.push(recordValue);
 				}
-				// create data matrix
-				let matrix = [header];
-				for (let i = 0; i < records.length; i++) {
-					let record = records[i];
-					console.log(record);
-					let tmp = [];
-					for (let field of header) {
-						let item = record[field];
-						if (item !== undefined && item !== null) {
-							tmp.push(item);
-						} else {
-							tmp.push('');
-						}
-					}
-					matrix.push(tmp);
-				}
-
-				// create html table
-				let htmlRecords = '<table style="border-top: solid 1px;border-spacing: 0;">';
-				for (let i = 0; i < matrix.length; i++) {
-					htmlRecords += '<tr>';
-					let row = matrix[i];
-					for (let j = 0; j < row.length; j++) {
-						htmlRecords += '<td style="padding: 10px;border-bottom: solid 1px;">' + row[j] + '</td>';
-					}
-					htmlRecords += '</tr>';
-				}
-				htmlRecords += '</table>';
-
-				let panel = vscode.window.createWebviewPanel(
-					'Records', 'Avro Records', vscode.ViewColumn.One, {}
-				);
-				panel.webview.html = `<!DOCTYPE html>
-				<html lang="en">
-				<body><p>${htmlRecords}</p></body>
-				</html>`;
-			});
+				matrix.push(recordValues);
+			}
+			let panel = vscode.window.createWebviewPanel('Records', 'Avro Records', vscode.ViewColumn.One, {});
+			panel.webview.html = getHtmlRecords(matrix);
+		});
 
 		context.subscriptions.push(disposable);
 	})
