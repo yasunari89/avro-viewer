@@ -4,7 +4,7 @@
   "displayName": "avro-viewer",
   "description": "This is a vscode extension that allows you to preview .avro files.",
   "icon": "images/icon.jpg",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "engines": {
     "vscode": "^1.78.0"
   },

@@ -39,7 +39,7 @@ function activate(context) {
 			<!DOCTYPE html>
 			<html lang=en>
 				<body>
-					<table style="border-top: solid 1px;border-spacing: 0;">
+					<table contenteditable="true" style="border-top: solid 1px;border-spacing: 0;">
 						${formattedRows.join('')}
 					</table>
 				</body>
